@@ -26,7 +26,7 @@ impl StockItem {
 
 #[tauri::command]
 pub fn stcok_list() -> Vec<StockItem> {
-    let symbols = "SH601012,SH601011,SH601010,SH601006,SH601009";
+    let symbols = "SH601012,SH600312,SH603501";
     let result = get(symbols);
     match result {
         Ok(result_value) => {

@@ -1,0 +1,7 @@
+.gr-181 {
+    grid-template-rows: 1fr 8fr 1fr;
+}
+
+.gc-p {
+    grid-template-columns: 10% 40% 5% 45%;
+}
