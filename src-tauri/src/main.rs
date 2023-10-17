@@ -3,8 +3,10 @@
 
 mod data;
 use data::stock::stcok_list;
+use tokio;
 
-fn main() {
+#[tokio::main]
+async fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![stcok_list])
     .run(tauri::generate_context!())

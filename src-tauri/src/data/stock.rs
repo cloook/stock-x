@@ -1,4 +1,4 @@
-use super::fetch::get;
+use super::fetch::get_stock_list;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -25,22 +25,23 @@ impl StockItem {
 }
 
 #[tauri::command]
-pub fn stcok_list() -> Vec<StockItem> {
+pub async fn stcok_list() -> Vec<StockItem> {
     let symbols = "SH601012,SH600312,SH603501";
-    let result = get(symbols);
-    match result {
+    let result = get_stock_list(symbols);
+    match result.await {
         Ok(result_value) => {
             let mut stock_list: Vec<StockItem> = Vec::new();
-            println!("error_code: {:?}", result_value["error_code"]);
             if result_value["error_code"] == 0 {
-                let stock_list_data = result_value["data"].as_array().unwrap();
+                let stock_list_data = result_value["data"]["items"].as_array().unwrap();
                 for stock in stock_list_data {
                     let mut item = StockItem::new();
-                    item.code = stock["symbol"].as_str().unwrap().to_string();
-                    item.price = stock["current"].as_f64().unwrap();
-                    item.percent = stock["percent"].as_f64().unwrap();
-                    item.high_price = stock["high"].as_f64().unwrap();
-                    item.low_price = stock["low"].as_f64().unwrap();
+                    let quote = stock["quote"].as_object().unwrap();
+                    item.code = quote["symbol"].as_str().unwrap().to_string();
+                    item.price = quote["current"].as_f64().unwrap();
+                    item.percent = quote["percent"].as_f64().unwrap();
+                    item.high_price = quote["high"].as_f64().unwrap();
+                    item.low_price = quote["low"].as_f64().unwrap();
+                    item.name = quote["name"].as_str().unwrap().to_string();
                     stock_list.push(item);
                 }
                 return stock_list;
