@@ -27,6 +27,14 @@ function caclPercent(percent: Number) {
 export function List() {
   const items: Array<StockItem> = []
   const [list, setList] = useState(items)
+  const [editShow, seteEditShow] = useState(false)
+
+  const edit = () => {
+    if (editShow) {
+      // save
+    }
+    seteEditShow(!editShow)
+  }
 
   const refresh = () => {
     invoke<Array<StockItem>>("stcok_list")
@@ -64,37 +72,48 @@ export function List() {
   }
 
   return (
-    <div className="grid gr-181">
-      <div>list2</div>
-      <div className="flex flex-col w-screen gap-4">
+    <div className="flex flex-col">
+      <div className="flex grow flex-col w-screen gap-4 mt-5">
         {list.map((item, index) => (
           <div key={index}>
-            <div className="bg-indigo-600 mx-4 h-8 flex">
-              <StockProcess columnWidths={caclPercent(item.percent)} />
-              <div className="w-1/2 text-xs flex items-center justify-center">
-                <p>{item.name}</p>
+            {editShow && (
+              <div>{item.name}</div>
+            )}
+            {!editShow && (
+              <div>
+                <div className="bg-indigo-600 mx-4 h-8 flex">
+                  <StockProcess columnWidths={caclPercent(item.percent)} />
+                  <div className="w-1/2 text-xs flex items-center justify-center">
+                    <p>{item.name}</p>
+                  </div>
+                </div>
+                <div className="mx-4 flex text-sm w-screen items-center justify-start">
+                  <p className=" basis-1/4 subpixel-antialiased font-mono">
+                    {item.percent.valueOf()}%
+                  </p>
+                  <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-amber-500">
+                    {item.price.valueOf()}
+                  </p>
+                  <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-green-500">
+                    {item.low_price.valueOf()}
+                  </p>
+                  <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-pink-500">
+                    {item.high_price.valueOf()}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="mx-4 flex text-sm w-screen items-center justify-start">
-              <p className=" basis-1/4 subpixel-antialiased font-mono">{item.percent.valueOf()}%</p>
-              <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-amber-500">{item.price.valueOf()}</p>
-              <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-green-500">{item.low_price.valueOf()}</p>
-              <p className=" basis-1/4 subpixel-antialiased text-xs font-mono text-pink-500">{item.high_price.valueOf()}</p>
-            </div>
+            )}
           </div>
         ))}
       </div>
-      <div className="row-span-1">
-        <XButton onClick={refresh} />
+      <div className="flex-none">
+        <div
+          className="flex justify-center items-center w-screen bg-sky-500 hover:bg-sky-600 cursor-grab"
+          onClick={edit}
+        >
+          {editShow ? "保存" : "编辑"}
+        </div>
       </div>
     </div>
   )
-}
-
-type XButtonProps = {
-  onClick: () => void
-}
-
-const XButton: React.FC<XButtonProps> = ({ onClick }) => {
-  return <button onClick={onClick}>Refresh</button>
 }

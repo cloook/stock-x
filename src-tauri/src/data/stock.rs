@@ -1,5 +1,6 @@
 use super::fetch::get_stock_list;
 use serde::Serialize;
+use super::sled::DB_INSTANCE;
 
 #[derive(Serialize, Debug)]
 pub struct StockItem {
@@ -27,6 +28,9 @@ impl StockItem {
 #[tauri::command]
 pub async fn stcok_list() -> Vec<StockItem> {
     let symbols = "SH601012,SH600312,SH603501";
+    if let Some(k1) = DB_INSTANCE.get("k1").unwrap() {
+        println!("k1: {}", String::from_utf8_lossy(&k1));
+    };
     let result = get_stock_list(symbols);
     match result.await {
         Ok(result_value) => {
