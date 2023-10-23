@@ -2,6 +2,10 @@ use super::fetch::get_stock_list;
 use serde::Serialize;
 use super::sled::DB_INSTANCE;
 
+mod keys {
+    pub const STOCK_LIST_KEY: &str = "stock_list";
+}
+
 #[derive(Serialize, Debug)]
 pub struct StockItem {
     code: String,
@@ -28,7 +32,7 @@ impl StockItem {
 #[tauri::command]
 pub async fn stcok_list() -> Vec<StockItem> {
     let symbols = "SH601012,SH600312,SH603501";
-    if let Some(k1) = DB_INSTANCE.get("k1").unwrap() {
+    if let Some(k1) = DB_INSTANCE.get(keys::STOCK_LIST_KEY).unwrap() {
         println!("k1: {}", String::from_utf8_lossy(&k1));
     };
     let result = get_stock_list(symbols);
@@ -54,4 +58,9 @@ pub async fn stcok_list() -> Vec<StockItem> {
         Err(e) => println!("match result error, {}", e),
     }
     vec![]
+}
+
+#[tauri::command]
+pub async fn update_and_sort(new_list: String)  {
+    DB_INSTANCE.insert(keys::STOCK_LIST_KEY, new_list.as_str()).unwrap();
 }

@@ -21,7 +21,7 @@ tauri = { version = "1.5.1", features = [] }
 reqwest = { version = "0.11", features = ["blocking"] }
 flate2 = "1.0"
 tokio = { version = "1", features = ["full"] }
-sled = "0.34.7"
+sled = "0.34"
 lazy_static = "1.4.0"
 
 [features]

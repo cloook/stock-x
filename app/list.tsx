@@ -27,13 +27,23 @@ function caclPercent(percent: Number) {
 export function List() {
   const items: Array<StockItem> = []
   const [list, setList] = useState(items)
-  const [editShow, seteEditShow] = useState(false)
+  const [editShow, seteEditShow] = useState(true)
 
   const edit = () => {
     if (editShow) {
       // save
     }
     seteEditShow(!editShow)
+  }
+
+  const changeSort = (index: number) => {
+    console.log(index);
+  }
+
+  const updateSort = () => {
+    invoke<string>("update_and_sort", { new_list: list.toString })
+      .then(console.log)
+      .catch(console.error)
   }
 
   const refresh = () => {
@@ -74,10 +84,34 @@ export function List() {
   return (
     <div className="flex flex-col">
       <div className="flex grow flex-col w-screen gap-4 mt-5">
+        {editShow && (
+          <div className="flex justify-between mx-5 border-b-2">
+            <p>名称</p>
+            <p>排序</p>
+          </div>
+        )}
         {list.map((item, index) => (
           <div key={index}>
             {editShow && (
-              <div>{item.name}</div>
+              <div className="flex justify-between mx-5">
+                <p>{item.name}</p>
+                <div className="cursor-grab" onClick={() => changeSort(index)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
             )}
             {!editShow && (
               <div>
