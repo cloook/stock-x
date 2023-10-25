@@ -1,6 +1,6 @@
 use super::fetch::get_stock_list;
-use serde::Serialize;
 use super::sled::DB_INSTANCE;
+use serde::Serialize;
 
 mod keys {
     pub const STOCK_LIST_KEY: &str = "stock_list";
@@ -31,36 +31,45 @@ impl StockItem {
 
 #[tauri::command]
 pub async fn stcok_list() -> Vec<StockItem> {
-    let symbols = "SH601012,SH600312,SH603501";
-    if let Some(k1) = DB_INSTANCE.get(keys::STOCK_LIST_KEY).unwrap() {
-        println!("k1: {}", String::from_utf8_lossy(&k1));
-    };
-    let result = get_stock_list(symbols);
-    match result.await {
-        Ok(result_value) => {
-            let mut stock_list: Vec<StockItem> = Vec::new();
-            if result_value["error_code"] == 0 {
-                let stock_list_data = result_value["data"]["items"].as_array().unwrap();
-                for stock in stock_list_data {
-                    let mut item = StockItem::new();
-                    let quote = stock["quote"].as_object().unwrap();
-                    item.code = quote["symbol"].as_str().unwrap().to_string();
-                    item.price = quote["current"].as_f64().unwrap();
-                    item.percent = quote["percent"].as_f64().unwrap();
-                    item.high_price = quote["high"].as_f64().unwrap();
-                    item.low_price = quote["low"].as_f64().unwrap();
-                    item.name = quote["name"].as_str().unwrap().to_string();
-                    stock_list.push(item);
+    if let Some(value) = DB_INSTANCE
+        .get(keys::STOCK_LIST_KEY)
+        .expect("Failed to get data")
+    {
+        if let Ok(symbols) = String::from_utf8(value.to_vec()) {
+            let result = get_stock_list(&symbols);
+            match result.await {
+                Ok(result_value) => {
+                    let mut stock_list: Vec<StockItem> = Vec::new();
+                    if result_value["error_code"] == 0 {
+                        let stock_list_data = result_value["data"]["items"].as_array().unwrap();
+                        for stock in stock_list_data {
+                            let mut item = StockItem::new();
+                            let quote = stock["quote"].as_object().unwrap();
+                            item.code = quote["symbol"].as_str().unwrap().to_string();
+                            item.price = quote["current"].as_f64().unwrap();
+                            item.percent = quote["percent"].as_f64().unwrap();
+                            item.high_price = quote["high"].as_f64().unwrap();
+                            item.low_price = quote["low"].as_f64().unwrap();
+                            item.name = quote["name"].as_str().unwrap().to_string();
+                            stock_list.push(item);
+                        }
+                        return stock_list;
+                    }
                 }
-                return stock_list;
+                Err(e) => println!("match result error, {}", e),
             }
+        } else {
+            eprintln!("Failed to convert value to &str");
         }
-        Err(e) => println!("match result error, {}", e),
+    } else {
+        eprintln!("Key not found");
     }
     vec![]
 }
 
 #[tauri::command]
-pub async fn update_and_sort(new_list: String)  {
-    DB_INSTANCE.insert(keys::STOCK_LIST_KEY, new_list.as_str()).unwrap();
+pub async fn update_and_sort(new_list: String) {
+    DB_INSTANCE
+        .insert(keys::STOCK_LIST_KEY, new_list.as_str())
+        .unwrap();
 }

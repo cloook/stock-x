@@ -12,6 +12,10 @@ type StockItem = {
   low_price: Number
 }
 
+function symbol(items: Array<StockItem>) {
+  return items.map(e => e.code).join(',');
+}
+
 function caclPercent(percent: Number) {
   if (percent.valueOf() >= 0) {
     const caclPercent = percent.valueOf() * 5
@@ -24,6 +28,16 @@ function caclPercent(percent: Number) {
   }
 }
 
+function moveElementToFirst<T>(array: T[], index: number): T[] {
+  if (index < 0 || index >= array.length) {
+    return array; 
+  }
+
+  const elementToMove = array[index];
+  const newArray = [elementToMove, ...array.slice(0, index), ...array.slice(index + 1)];
+  return newArray;
+}
+
 export function List() {
   const items: Array<StockItem> = []
   const [list, setList] = useState(items)
@@ -32,16 +46,18 @@ export function List() {
   const edit = () => {
     if (editShow) {
       // save
+      updateSort();
     }
     seteEditShow(!editShow)
   }
 
   const changeSort = (index: number) => {
-    console.log(index);
+    const newList = moveElementToFirst(list, index);
+    setList(newList);
   }
 
   const updateSort = () => {
-    invoke<string>("update_and_sort", { new_list: list.toString })
+    invoke<string>("update_and_sort", { newList: symbol(list)})
       .then(console.log)
       .catch(console.error)
   }
