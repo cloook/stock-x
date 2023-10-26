@@ -36,6 +36,7 @@ pub async fn stcok_list() -> Vec<StockItem> {
         .expect("Failed to get data")
     {
         if let Ok(symbols) = String::from_utf8(value.to_vec()) {
+            println!("symbols: {}", symbols);
             let result = get_stock_list(&symbols);
             match result.await {
                 Ok(result_value) => {
@@ -72,4 +73,5 @@ pub async fn update_and_sort(new_list: String) {
     DB_INSTANCE
         .insert(keys::STOCK_LIST_KEY, new_list.as_str())
         .unwrap();
+    DB_INSTANCE.flush().unwrap();
 }
