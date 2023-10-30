@@ -152,7 +152,7 @@ export function List() {
             {editShow && (
               <div className="flex justify-between mx-5">
                 <p>{item.name}</p>
-                <div className="cursor-grab" onClick={() => changeSort(index)}>
+                <div className="cursor-grab text-sky-500" onClick={() => changeSort(index)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -168,7 +168,7 @@ export function List() {
                     />
                   </svg>
                 </div>
-                <div className="cursor-grab" onClick={() => del(index)}>
+                <div className="cursor-grab text-rose-500" onClick={() => del(index)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
