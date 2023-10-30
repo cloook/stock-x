@@ -47,18 +47,31 @@ export function List() {
   const [list, setList] = useState(items)
   const [editShow, seteEditShow] = useState(false)
   const [addShow, seteAddShow] = useState(false)
-  const [addCode, seteAddCode] = useState('')
+  const [addCode, seteAddCode] = useState("")
+  const [selectedSymbol, setSelectedSymbol] = useState("SH")
+
+  const handleSymbolChange = (e: number) => {
+    const s = e == 1 ? "SH" : "SZ"
+    setSelectedSymbol(s)
+  }
 
   const resetAddCode = () => {
-    seteAddCode('');
-    seteAddShow(false);
+    seteAddCode("")
+    seteAddShow(false)
   }
 
   const saveAddCode = () => {
-    list.push({ code: 'SH' + addCode, name: '', price: 0, percent: 0, high_price: 0, low_price: 0});
-    setList(list);
-    updateSort();
-    resetAddCode();
+    list.push({
+      code: selectedSymbol + addCode,
+      name: "",
+      price: 0,
+      percent: 0,
+      high_price: 0,
+      low_price: 0
+    })
+    setList(list)
+    updateSort()
+    resetAddCode()
   }
 
   const edit = () => {
@@ -74,11 +87,19 @@ export function List() {
     setList(newList)
   }
 
+  const del = (index: number) => {
+    const newlist = [...list]
+    if (index >= 0 && index < newlist.length) {
+      newlist.splice(index, 1);
+    }
+    setList(newlist)
+  }
+
   const updateSort = () => {
     invoke<string>("update_and_sort", { newList: symbol(list) })
       .then(console.log)
       .catch(console.error)
-    refresh();
+    refresh()
   }
 
   const refresh = () => {
@@ -122,7 +143,8 @@ export function List() {
         {editShow && (
           <div className="flex justify-between mx-5 border-b-2">
             <p>名称</p>
-            <p>排序</p>
+            <p>置顶</p>
+            <p>删除</p>
           </div>
         )}
         {list.map((item, index) => (
@@ -143,6 +165,22 @@ export function List() {
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="cursor-grab" onClick={() => del(index)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
                 </div>
@@ -176,13 +214,26 @@ export function List() {
         ))}
         {addShow && (
           <div className="flex flex-row">
-            <p>SH</p>
+            <div className="flex flex-row">
+              <div
+                onClick={() => handleSymbolChange(1)}
+                className={`${selectedSymbol == "SH" ? "bg-indigo-600" : ""}`}
+              >
+                SH
+              </div>
+              <div
+                onClick={() => handleSymbolChange(0)}
+                className={`${selectedSymbol == "SZ" ? "bg-indigo-600" : ""}`}
+              >
+                SZ
+              </div>
+            </div>
             <input
               type="text"
               value={addCode}
               onChange={(e) => seteAddCode(e.target.value)}
               placeholder="输入股票代码, 如601012"
-              className="border-1 ml-1 w-2/3 bg-neutral-700"
+              className="border-1 ml-1 w-3/5 bg-neutral-700"
             />
             <div className="ml-1 text-green-500" onClick={saveAddCode}>
               <svg
