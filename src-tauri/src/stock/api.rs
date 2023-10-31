@@ -36,7 +36,6 @@ pub async fn stcok_list() -> Vec<StockItem> {
         .expect("Failed to get data")
     {
         if let Ok(symbols) = String::from_utf8(value.to_vec()) {
-            println!("symbols: {}", symbols);
             let result = get_stock_list(&symbols);
             match result.await {
                 Ok(result_value) => {

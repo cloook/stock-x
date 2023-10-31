@@ -19,7 +19,6 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![stcok_list, update_and_sort])
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { position: _, size: _, .. } => {
-                println!("System tray left clicked");
                 let win = app.get_window("main").unwrap();
                 win.set_focus().unwrap();
             }
