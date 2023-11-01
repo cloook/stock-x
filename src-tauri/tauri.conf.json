@@ -11,11 +11,19 @@
   },
   "tauri": {
     "systemTray": {
-      "iconPath": "icons/stocks.png",
+      "iconPath": "icons/stock-up.png",
       "iconAsTemplate": true
     },
     "allowlist": {
-      "all": false
+      "all": true,
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://xueqiu.com/*",
+          "https://stock.xueqiu.com/*"
+        ]
+      }
     },
     "bundle": {
       "active": true,

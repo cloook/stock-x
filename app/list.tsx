@@ -105,6 +105,7 @@ export function List() {
   const refresh = () => {
     invoke<Array<StockItem>>("stcok_list")
       .then((res) => {
+        console.log('stcok_list: ' + JSON.stringify(res))
         setList(res)
       })
       .catch(console.error)
